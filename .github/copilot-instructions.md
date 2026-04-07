@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Default scope is TradeEdgeLab repositories only (mecs, MarketKnowledgeLayer, and future additions).
+- Default scope is TradeEdgeLab repositories only (MarketEnvConfirmSystem, MarketKnowledgeLayer, and future additions).
 - EODHD org repositories are out of scope unless explicitly referenced.
 - Never run commands or access anything outside the current repository's project directory.
 - uv environments are local (`cache-dir` inside each repo). No global installs.
