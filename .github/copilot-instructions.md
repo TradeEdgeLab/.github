@@ -29,3 +29,24 @@
 - Make minimal, surgical edits. Do not touch unrelated files.
 - Run `make check-all` (or equivalent) to validate before finishing.
 - Do not add unnecessary abstractions, error handling, or documentation beyond what was requested.
+
+## GitHub API Quirks for Agent Workflows
+
+- The `gh` CLI does not natively support creating official GitHub Epic/Sub-issue relationships.
+- Editing an issue body to include markdown task lists (e.g., `- [ ] #123`) does **not** create native parent/child "Sub-issue" relations.
+- You **must** bypass `gh issue edit` and use the GitHub GraphQL API directly with the `addSubIssue` mutation to establish these relationships.
+- Use the following pattern to manually link an issue to an Epic:
+  ```bash
+  # Step 1: Retrieve GraphQL Node IDs
+  PARENT_NODE_ID=$(gh issue view <EPIC_NUMBER> --json id -q .id)
+  CHILD_NODE_ID=$(gh issue view <CHILD_NUMBER> --json id -q .id)
+
+  # Step 2: Use the addSubIssue mutation
+  gh api graphql -f query='
+    mutation AddSubIssue($epicId: ID!, $childId: ID!) {
+      addSubIssue(input: {issueId: $epicId, subIssueId: $childId}) {
+        issue { id }
+      }
+    }
+  ' -f epicId="$PARENT_NODE_ID" -f childId="$CHILD_NODE_ID"
+  ```
